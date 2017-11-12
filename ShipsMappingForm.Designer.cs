@@ -35,7 +35,6 @@
             this.DeleteShip = new System.Windows.Forms.Button();
             this.ConfirmShipBtn = new System.Windows.Forms.Button();
             this.ResetShipBtn = new System.Windows.Forms.Button();
-            this.RandomizeBtn = new System.Windows.Forms.Button();
             this.CancelBtn = new System.Windows.Forms.Button();
             this.ConfirmBtn = new System.Windows.Forms.Button();
             this.FourLabel = new System.Windows.Forms.Label();
@@ -108,7 +107,7 @@
             // 
             this.ConfirmShipBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.ConfirmShipBtn.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ConfirmShipBtn.Location = new System.Drawing.Point(227, 559);
+            this.ConfirmShipBtn.Location = new System.Drawing.Point(339, 559);
             this.ConfirmShipBtn.Name = "ConfirmShipBtn";
             this.ConfirmShipBtn.Size = new System.Drawing.Size(190, 30);
             this.ConfirmShipBtn.TabIndex = 7;
@@ -120,25 +119,13 @@
             // 
             this.ResetShipBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.ResetShipBtn.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ResetShipBtn.Location = new System.Drawing.Point(423, 559);
+            this.ResetShipBtn.Location = new System.Drawing.Point(535, 559);
             this.ResetShipBtn.Name = "ResetShipBtn";
             this.ResetShipBtn.Size = new System.Drawing.Size(160, 30);
             this.ResetShipBtn.TabIndex = 8;
-            this.ResetShipBtn.Text = "Сбросить";
+            this.ResetShipBtn.Text = "Сбросить корабль";
             this.ResetShipBtn.UseVisualStyleBackColor = false;
             this.ResetShipBtn.Click += new System.EventHandler(this.ResetShipBtn_Click);
-            // 
-            // RandomizeBtn
-            // 
-            this.RandomizeBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.RandomizeBtn.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RandomizeBtn.Location = new System.Drawing.Point(589, 559);
-            this.RandomizeBtn.Name = "RandomizeBtn";
-            this.RandomizeBtn.Size = new System.Drawing.Size(242, 30);
-            this.RandomizeBtn.TabIndex = 9;
-            this.RandomizeBtn.Text = "Расставить корабли случайно";
-            this.RandomizeBtn.UseVisualStyleBackColor = false;
-            this.RandomizeBtn.Click += new System.EventHandler(this.RandomizeBtn_Click);
             // 
             // CancelBtn
             // 
@@ -216,7 +203,6 @@
             this.Controls.Add(this.FourLabel);
             this.Controls.Add(this.ConfirmBtn);
             this.Controls.Add(this.CancelBtn);
-            this.Controls.Add(this.RandomizeBtn);
             this.Controls.Add(this.ResetShipBtn);
             this.Controls.Add(this.ConfirmShipBtn);
             this.Controls.Add(this.DeleteShip);
@@ -240,7 +226,6 @@
         private System.Windows.Forms.Button DeleteShip;
         private System.Windows.Forms.Button ConfirmShipBtn;
         private System.Windows.Forms.Button ResetShipBtn;
-        private System.Windows.Forms.Button RandomizeBtn;
         private System.Windows.Forms.Button CancelBtn;
         private System.Windows.Forms.Button ConfirmBtn;
         private System.Windows.Forms.Label FourLabel;

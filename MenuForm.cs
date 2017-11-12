@@ -20,7 +20,8 @@ namespace SeaBattle
         private void CreateGameBtn_Click(object sender, EventArgs e)
         {
             ShipsMappingForm StartForm = new ShipsMappingForm(false);
-            StartForm.Show();
+            StartForm.Owner = this;
+            StartForm.Show();           
             this.Hide();
         }
 

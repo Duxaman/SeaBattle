@@ -37,35 +37,48 @@ namespace SeaBattle
         public FieldViewer(int fieldsize, System.Drawing.Point Location, int CellWidth)
         {
             System.Windows.Forms.DataGridViewButtonColumn[] Cols = new System.Windows.Forms.DataGridViewButtonColumn[fieldsize];
+            SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            ColumnHeadersVisible = true;
+            RowHeadersVisible = true;
             AllowUserToAddRows = false;
             AllowUserToDeleteRows = false;
             AllowUserToResizeColumns = false;
             AllowUserToResizeRows = false;
+            CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Sunken;
             AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.None;
             AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.None;
             BackgroundColor = System.Drawing.SystemColors.Control;
+            RowHeadersWidth = 50;
+            SelectionChanged += FieldViewer_SelectionChanged;
             ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             for(int i = 0; i < fieldsize; ++i)
             {
                 Cols[i] = new System.Windows.Forms.DataGridViewButtonColumn();
+                Cols[i].FlatStyle = System.Windows.Forms.FlatStyle.Flat;
                 Cols[i].Width = CellWidth;
-                Cols[i].HeaderText = "" + Convert.ToChar(i + 65); //TODO: Fix letters
+                Cols[i].HeaderText = "" + Convert.ToChar(i + 65);
                 Cols[i].Name = "" + Convert.ToChar(i + 65);
                 Cols[i].ReadOnly = true;
             }
             Columns.AddRange(Cols);
-            RowCount = fieldsize;
+            Rows.Add(fieldsize);
             for(int i = 0; i < fieldsize; ++i)
             {
-                Rows[i].HeaderCell.Value = i;
+                Rows[i].HeaderCell.Value = i.ToString();
                 Rows[i].Height = CellWidth;
                 Rows[i].ReadOnly = true;
             }
             FieldSize = fieldsize;
             this.Location = Location;
-            Size = new System.Drawing.Size((RowCount + 1) * CellWidth, (ColumnCount + 1) * CellWidth); 
-            
+            Size = new System.Drawing.Size((RowCount + 2) * CellWidth, (ColumnCount + 1) * CellWidth);
+            ClearSelection();
         }
+
+        private void FieldViewer_SelectionChanged(object sender, EventArgs e)
+        {
+            ClearSelection();
+        }
+
         public void updateCellState(CellState state, Point pos)
         {
             if(pos.X < FieldSize && pos.Y < FieldSize)
@@ -79,13 +92,14 @@ namespace SeaBattle
 
                 }
             }
+            ClearSelection();
         }
     }
     sealed public class Field
     {
         /*
          Cell is identified by 4 params
-         Owner - Player/Enemy (only if cell is occupied by the ship)
+         Owner - Player/Enemy (only if cell is occupied by the ship)   does it really needed?
          Type - ship type (1,2,3,4 decks)
          shipid - identifies the ship among the others of the same type
              */
@@ -94,13 +108,13 @@ namespace SeaBattle
             public CellState State;
             public bool ShipOwner;
             public ShipType Type;
-            string shipid;
+            public string Shipid;
             public Cell(CellState State, bool Owner, ShipType Type, string shipid)
             {
                 this.State = State;
                 this.ShipOwner = Owner;
                 this.Type = Type;
-                this.shipid = shipid;
+                this.Shipid = shipid;
             }
         }
         public Field(int Size)

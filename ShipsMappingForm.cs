@@ -14,10 +14,8 @@ namespace SeaBattle
     {
         private enum ShipOrientation : byte
         {
-            Up,
-            Down,
-            Left,
-            Right,
+            Vertical,
+            Horizontal,
             None
         }
         private bool GameLaunchType;
@@ -26,7 +24,7 @@ namespace SeaBattle
         private int[] CurCounters;  //amount of ships to be mapped
         private int ShipCounter;   //amount of cells of current ship to be mapped
         private ShipOrientation CurShipOrientation;
-        private ShipType CurShipType; 
+        private ShipType CurShipType;
         private Point LastPos; //the last pos of setting the ship // it'll help to identify collisions
         private string CurShipId;
         private bool deleteMode;
@@ -40,7 +38,7 @@ namespace SeaBattle
             FieldView.Enabled = false;
             CurCounters = new int[4];
 
-            for(int i = 0; i < 4; ++i)
+            for (int i = 0; i < 4; ++i)
             {
                 CurCounters[i] = i + 1;
             }
@@ -69,8 +67,8 @@ namespace SeaBattle
                     if (yst < 0) yst++;
                     if (LastPos.X == -1 && LastPos.Y == -1)
                     {
-                        for (int x = xst; x < e.ColumnIndex && x < _Field.FieldSize; ++x)
-                            for (int y = yst; y < e.RowIndex && y < _Field.FieldSize; ++y)
+                        for (int x = xst; x <= e.ColumnIndex + 1 && x < _Field.FieldSize; ++x)
+                            for (int y = yst; y <= e.RowIndex + 1 && y < _Field.FieldSize; ++y)
                             {
                                 if (_Field.getCell(x, y).State == CellState.Occupied) return;  //if at least one cell around is specified then position of new ship is invalid
                             }
@@ -88,39 +86,32 @@ namespace SeaBattle
                         check does the orientation specified,
                         if not check does the new deck is nearby the previous one, then specify orientation
                         */
+                        bool DeckIsNear = false;
                         if (CurShipOrientation == ShipOrientation.None)
                         {
-                            for (int x = xst; x < e.ColumnIndex && x < _Field.FieldSize; ++x)
-                                for (int y = yst; y < e.RowIndex && y < _Field.FieldSize; ++y)  //iterating over the cells around current cell,
+                            for (int x = xst; x <= e.ColumnIndex + 1 && x < _Field.FieldSize; ++x)
+                                for (int y = yst; y <= e.RowIndex + 1 && y < _Field.FieldSize; ++y)  //iterating over the cells around current cell,
                                 {                                                               //all cells around must be free, excluding the previous deck
                                     if (_Field.getCell(x, y).State == CellState.Occupied)       //if the cell is occupied
                                     {
-                                        if (x == LastPos.X && y == LastPos.Y)                   //and that occupied cell - the last pos of current ship
+                                        if (x == LastPos.X && y == LastPos.Y)                   //and that occupied cell - last pos
                                         {
-                                            if (e.ColumnIndex - 1 == x && e.RowIndex == y)      //determine the orientation
+                                            DeckIsNear = true;
+                                            if ((e.ColumnIndex - 1 == x && e.RowIndex == y) || (e.ColumnIndex + 1 == x && e.RowIndex == y))      //determine the orientation
                                             {
-                                                CurShipOrientation = ShipOrientation.Left;
+                                                CurShipOrientation = ShipOrientation.Horizontal;
                                                 continue;
                                             }
-                                            if (e.ColumnIndex == x && e.RowIndex - 1 == y)
+                                            if ((e.ColumnIndex == x && e.RowIndex - 1 == y) || (e.ColumnIndex == x && e.RowIndex + 1 == y))
                                             {
-                                                CurShipOrientation = ShipOrientation.Up;
-                                                continue;
-                                            }
-                                            if (e.ColumnIndex + 1 == x && e.RowIndex == y)
-                                            {
-                                                CurShipOrientation = ShipOrientation.Right;
-                                                continue;
-                                            }
-                                            if (e.ColumnIndex == x && e.RowIndex + 1 == y)
-                                            {
-                                                CurShipOrientation = ShipOrientation.Down;
+                                                CurShipOrientation = ShipOrientation.Vertical;
                                                 continue;
                                             }
                                         }
                                         return;
                                     }
                                 }
+                            if (!DeckIsNear) return;
                             LastPos.X = e.ColumnIndex;
                             LastPos.Y = e.RowIndex;   //set cell to the field and decrement counter
                             _Field.setCell(e.ColumnIndex, e.RowIndex, new Field.Cell(CellState.Occupied, false, CurShipType, CurShipId));
@@ -130,24 +121,24 @@ namespace SeaBattle
                         else
                         {
                             //here check orientation & proximity,
-                            for (int x = xst; x < e.ColumnIndex && x < _Field.FieldSize; ++x)
-                                for (int y = yst; y < e.RowIndex && y < _Field.FieldSize; ++y) //iterating over all cells around current one
+                            for (int x = xst; x <= e.ColumnIndex + 1 && x < _Field.FieldSize; ++x)
+                                for (int y = yst; y <= e.RowIndex + 1 && y < _Field.FieldSize; ++y) //iterating over all cells around current one
                                 {
                                     if (_Field.getCell(x, y).State == CellState.Occupied)     //if occupied cell encountered
                                     {
-                                        if (x == LastPos.X && y == LastPos.Y)                 //and if occupied cell is the previous deck
+                                        if (_Field.getCell(x, y).Shipid == CurShipId)                 //and if occupied cell have the same id as the current ship
                                         {
+                                            DeckIsNear = true;
                                             switch (CurShipOrientation)                        //check the orientation
                                             {
-                                                case ShipOrientation.Down: if (e.ColumnIndex == x && e.RowIndex - 1 == y) continue; break;
-                                                case ShipOrientation.Left: if (e.ColumnIndex - 1 == x && e.RowIndex == y) continue; break;
-                                                case ShipOrientation.Right: if (e.ColumnIndex + 1 == x && e.RowIndex == y) continue; break;
-                                                case ShipOrientation.Up: if (e.ColumnIndex == x && e.RowIndex - 1 == y) continue; break;
+                                                case ShipOrientation.Vertical: if ((e.ColumnIndex == x && e.RowIndex - 1 == y) || (e.ColumnIndex == x && e.RowIndex + 1 == y)) continue; break; //check both side simuataneosly
+                                                case ShipOrientation.Horizontal: if ((e.ColumnIndex - 1 == x && e.RowIndex == y) || (e.ColumnIndex + 1 == x && e.RowIndex == y)) continue; break;
                                             }
                                         }
                                         return;   //if encounter unknown occupied cell
                                     }
                                 }
+                            if (!DeckIsNear) return;
                             LastPos.X = e.ColumnIndex;
                             LastPos.Y = e.RowIndex;   //set cell and decrement counter
                             _Field.setCell(e.ColumnIndex, e.RowIndex, new Field.Cell(CellState.Occupied, false, CurShipType, CurShipId));
@@ -155,17 +146,17 @@ namespace SeaBattle
                             ShipCounter--;
                         }
                     }
-                } 
+                }
             }
             else
             {
                 ShipOrientation DeletingShipOrientation = ShipOrientation.None;
                 //check does the selected cell is occipied
-                if(_Field.getCell(e.ColumnIndex,e.RowIndex).State == CellState.Occupied)
+                if (_Field.getCell(e.ColumnIndex, e.RowIndex).State == CellState.Occupied)
                 {
                     ShipType sh_type = _Field.getCell(e.ColumnIndex, e.RowIndex).Type;
                     CurCounters[(byte)sh_type]++;
-                    switch(_Field.getCell(e.ColumnIndex, e.RowIndex).Type)
+                    switch (_Field.getCell(e.ColumnIndex, e.RowIndex).Type)
                     {
                         case ShipType.FourDeck:
                             FourLabel.Text = CurCounters[(byte)sh_type].ToString();
@@ -182,38 +173,35 @@ namespace SeaBattle
                     }
                     //scan  ways
                     //first vertical
-                    if ((e.RowIndex - 1 >= 0 && _Field.getCell(e.ColumnIndex,e.RowIndex - 1).State == CellState.Occupied) ||
+                    if ((e.RowIndex - 1 >= 0 && _Field.getCell(e.ColumnIndex, e.RowIndex - 1).State == CellState.Occupied) ||
                        (e.RowIndex + 1 < _Field.FieldSize && _Field.getCell(e.ColumnIndex, e.RowIndex + 1).State == CellState.Occupied))
                     {
-                        DeletingShipOrientation = ShipOrientation.Down;
+                        DeletingShipOrientation = ShipOrientation.Vertical;
                     }
-                    if(DeletingShipOrientation != ShipOrientation.Down)
+                    if (DeletingShipOrientation != ShipOrientation.Vertical)
                     {
                         if ((e.ColumnIndex - 1 >= 0 && _Field.getCell(e.ColumnIndex - 1, e.RowIndex).State == CellState.Occupied) ||
                             (e.ColumnIndex + 1 < _Field.FieldSize && _Field.getCell(e.ColumnIndex + 1, e.RowIndex).State == CellState.Occupied))
                         {
-                            DeletingShipOrientation = ShipOrientation.Right;
+                            DeletingShipOrientation = ShipOrientation.Horizontal;
                         }
                         else
                         {
                             DeletingShipOrientation = ShipOrientation.None;
                         }
                     }
-                    if (DeletingShipOrientation == ShipOrientation.None) DeleteShipFromLastPos(new Point(e.ColumnIndex, e.RowIndex), DeletingShipOrientation);
-                    else if(DeletingShipOrientation == ShipOrientation.Down)
+                    if (DeletingShipOrientation == ShipOrientation.None) DeleteShipFromOneDeck(new Point(e.ColumnIndex, e.RowIndex), DeletingShipOrientation);
+                    else if (DeletingShipOrientation == ShipOrientation.Vertical)
                     {
-                        int y = e.RowIndex;
-                        while ( (y - 1) >= 0 && _Field.getCell(e.ColumnIndex, y - 1).State == CellState.Occupied) --y;
-                        DeleteShipFromLastPos(new Point(e.ColumnIndex, y), DeletingShipOrientation);
+                        DeleteShipFromOneDeck(new Point(e.ColumnIndex, e.RowIndex), DeletingShipOrientation);
                     }
                     else
                     {
-                        int x = e.ColumnIndex;
-                        while ((x - 1) >= 0 && _Field.getCell(x - 1, e.RowIndex).State == CellState.Occupied) --x;
-                        DeleteShipFromLastPos(new Point(x, e.RowIndex), DeletingShipOrientation);
+                        DeleteShipFromOneDeck(new Point(e.ColumnIndex, e.RowIndex), DeletingShipOrientation);
                     }
                 }
                 deleteMode = false;
+                FieldView.Enabled = false;
                 //restore another buttons availability
                 Map1Btn.Enabled = true;
                 Map2Btn.Enabled = true;
@@ -229,31 +217,36 @@ namespace SeaBattle
 
         private void CancelBtn_Click(object sender, EventArgs e)
         {
-            ParentForm.Show(); //TODO: Figure out how to open menu back
             this.Close();
         }
 
         private void ConfirmBtn_Click(object sender, EventArgs e)
         {
-            for(int i = 0; i < CurCounters.Length; ++i)
+            if (ShipCounter == 0)
             {
-                if(CurCounters[i] > 0)
+                for (int i = 0; i < CurCounters.Length; ++i)
                 {
-                    MessageBox.Show("Вы расставили не все корабли", "Ошибка");
-                    return;
+                    if (CurCounters[i] > 0)
+                    {
+                        MessageBox.Show("Вы расставили не все корабли", "Ошибка");
+                        return;
+                    }
                 }
+                if (MessageBox.Show("Завершить расстановку кораблей?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    // init new form and start game
+                } 
             }
-            if (MessageBox.Show("Завершить расстановку кораблей?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                // init new form and start game
-            }
+            else
+                MessageBox.Show("Вы расставили корабль", "Ошибка");
         }
 
         private void Map4Btn_Click(object sender, EventArgs e)
         {
             if (CurCounters[0] > 0) //if there are still more ships to map
             {
-                Map4Btn.Enabled = false;
+                CurShipOrientation = ShipOrientation.None;
+                DisableButtons();
                 ResetShipBtn.Enabled = true;
                 ConfirmShipBtn.Enabled = true;
                 LastPos.X = -1;
@@ -262,14 +255,15 @@ namespace SeaBattle
                 CurShipType = ShipType.FourDeck;
                 ShipCounter = 4;
             }
-            
+
         }
 
         private void Map3Btn_Click(object sender, EventArgs e)
         {
             if (CurCounters[1] > 0)
             {
-                Map3Btn.Enabled = false;
+                CurShipOrientation = ShipOrientation.None;
+                DisableButtons();
                 ResetShipBtn.Enabled = true;
                 ConfirmShipBtn.Enabled = true;
                 LastPos.X = -1;
@@ -283,7 +277,8 @@ namespace SeaBattle
         {
             if (CurCounters[2] > 0)
             {
-                Map2Btn.Enabled = false;
+                CurShipOrientation = ShipOrientation.None;
+                DisableButtons();
                 ResetShipBtn.Enabled = true;
                 ConfirmShipBtn.Enabled = true;
                 LastPos.X = -1;
@@ -298,7 +293,8 @@ namespace SeaBattle
         {
             if (CurCounters[3] > 0)
             {
-                Map1Btn.Enabled = false;
+                CurShipOrientation = ShipOrientation.None;
+                DisableButtons();
                 ResetShipBtn.Enabled = true;
                 ConfirmShipBtn.Enabled = true;
                 LastPos.X = -1;
@@ -308,16 +304,21 @@ namespace SeaBattle
                 ShipCounter = 1;
             }
         }
-
+        private void DisableButtons()
+        {
+            Map1Btn.Enabled = false;
+            Map2Btn.Enabled = false;
+            Map3Btn.Enabled = false;
+            Map4Btn.Enabled = false;
+            DeleteShip.Enabled = false;
+        }
         private void DeleteShip_Click(object sender, EventArgs e)
         {
             //when this mode if on, one can click on the ship and it will be deleted
             //after click all other buttons must be disabled 
             deleteMode = true;
-            Map1Btn.Enabled = false;
-            Map2Btn.Enabled = false;
-            Map3Btn.Enabled = false;
-            Map4Btn.Enabled = false;
+            FieldView.Enabled = true;
+            DisableButtons();
 
         }
 
@@ -332,23 +333,23 @@ namespace SeaBattle
                 switch (CurShipType)
                 {
                     case ShipType.FourDeck:
-                        Map4Btn.Enabled = true;
                         FourLabel.Text = CurCounters[(byte)CurShipType].ToString();
                         break;
                     case ShipType.ThreeDeck:
-                        Map3Btn.Enabled = true;
                         ThreeLabel.Text = CurCounters[(byte)CurShipType].ToString();
                         break;
                     case ShipType.TwoDeck:
-                        Map2Btn.Enabled = true;
                         TwoLabel.Text = CurCounters[(byte)CurShipType].ToString();
                         break;
                     case ShipType.OneDeck:
-                        Map1Btn.Enabled = true;
                         OneLabel.Text = CurCounters[(byte)CurShipType].ToString();
                         break;
                 }
-               
+                Map1Btn.Enabled = true;
+                Map2Btn.Enabled = true;
+                Map3Btn.Enabled = true;
+                Map4Btn.Enabled = true;
+                DeleteShip.Enabled = true;
             }
             else
             {
@@ -359,77 +360,69 @@ namespace SeaBattle
         //after this one can choose new ship to map
         private void ResetShipBtn_Click(object sender, EventArgs e)
         {
-            //we know the orientation, and the last pos, thus
-            //reverse the proccess
-            CurCounters[(byte)CurShipType]++;
-            ShipCounter =  DeleteShipFromLastPos(LastPos, CurShipOrientation);
+            //we know the orientation, and the last pos, thus send lastpos to delete method
+            if (LastPos.X != -1 && LastPos.Y != -1)
+            {
+                CurCounters[(byte)CurShipType]++;
+                DeleteShipFromOneDeck(LastPos, CurShipOrientation);               
+            }
             FieldView.Enabled = false;
             ResetShipBtn.Enabled = false;
+            DeleteShip.Enabled = false;
             ConfirmShipBtn.Enabled = false;
-            switch (CurShipType)
-            {
-                case ShipType.FourDeck: Map4Btn.Enabled = true; break;
-                case ShipType.ThreeDeck: Map3Btn.Enabled = true; break;
-                case ShipType.TwoDeck: Map2Btn.Enabled = true; break;
-                case ShipType.OneDeck: Map1Btn.Enabled = true; break;
-            }
+            Map1Btn.Enabled = true;
+            Map2Btn.Enabled = true;
+            Map3Btn.Enabled = true;
+            Map4Btn.Enabled = true;
         }
         //returns am of deleted cells
-        private int DeleteShipFromLastPos(Point LastPos, ShipOrientation Orientation)
+        private void DeleteShipFromOneDeck(Point ShipCell, ShipOrientation Orientation)
         {
             int DeletedCells = 0;
             switch (Orientation)
             {
-                case ShipOrientation.Down:
+                case ShipOrientation.Vertical:
                     {
-                        for (int y = LastPos.Y; y > 0 && _Field.getCell(LastPos.X, y).State != CellState.Free; --y)
+                        int pos = ShipCell.Y;
+                        while ( (pos >= 0) && _Field.getCell(ShipCell.X, pos).State == CellState.Occupied)    //move to the start
+                        {
+                            pos--;                            
+                        }
+                        pos++;
+                        for (int y = pos; y < _Field.FieldSize && _Field.getCell(ShipCell.X, y).State != CellState.Free; ++y)    //check
                         {
                             DeletedCells++;
-                            _Field.setCell(LastPos.X, y, new Field.Cell(CellState.Free, false, ShipType.None, "-1"));
-                            FieldView.updateCellState(CellState.Free, new Point(LastPos.X, y));
+                            _Field.setCell(ShipCell.X, y, new Field.Cell(CellState.Free, false, ShipType.None, "-1"));
+                            FieldView.updateCellState(CellState.Free, new Point(ShipCell.X, y));
                         }
                     }
                     break;
-                case ShipOrientation.Up:
+                case ShipOrientation.Horizontal:
                     {
-                        for (int y = LastPos.Y; y < _Field.FieldSize && _Field.getCell(LastPos.X, y).State != CellState.Free; ++y)
+                        int pos = ShipCell.X;
+                        while ((pos >= 0) && _Field.getCell(pos, ShipCell.Y).State == CellState.Occupied)    //move to the start
                         {
-                            DeletedCells++;
-                            _Field.setCell(LastPos.X, y, new Field.Cell(CellState.Free, false, ShipType.None, "-1"));
-                            FieldView.updateCellState(CellState.Free, new Point(LastPos.X, y));
+                            pos--;
                         }
-                    }
-                    break;
-                case ShipOrientation.Left:
-                    {
-                        for (int x = LastPos.X; x < _Field.FieldSize && _Field.getCell(x, LastPos.Y).State != CellState.Free; ++x)
+                        pos++;
+                        for (int x = pos; x < _Field.FieldSize && _Field.getCell(x, ShipCell.Y).State != CellState.Free; ++x)
                         {
                             DeletedCells++;
-                            _Field.setCell(x, LastPos.Y, new Field.Cell(CellState.Free, false, ShipType.None, "-1"));
-                            FieldView.updateCellState(CellState.Free, new Point(x, LastPos.Y));
-                        }
-                    }
-                    break;
-                case ShipOrientation.Right:
-                    {
-                        for (int x = LastPos.X; x > 0 && _Field.getCell(x, LastPos.Y).State != CellState.Free; --x)
-                        {
-                            DeletedCells++;
-                            _Field.setCell(x, LastPos.Y, new Field.Cell(CellState.Free, false, ShipType.None, "-1"));
-                            FieldView.updateCellState(CellState.Free, new Point(x, LastPos.Y));
+                            _Field.setCell(x, ShipCell.Y, new Field.Cell(CellState.Free, false, ShipType.None, "-1"));
+                            FieldView.updateCellState(CellState.Free, new Point(x, ShipCell.Y));
                         }
                     }
                     break;
                 case ShipOrientation.None:
                     {
                         DeletedCells++;
-                        _Field.setCell(LastPos.X, LastPos.Y, new Field.Cell(CellState.Free, false, ShipType.None, "-1"));
-                        FieldView.updateCellState(CellState.Free, new Point(LastPos.X, LastPos.Y));
-
+                        _Field.setCell(ShipCell.X, ShipCell.Y, new Field.Cell(CellState.Free, false, ShipType.None, "-1"));
+                        FieldView.updateCellState(CellState.Free, new Point(ShipCell.X, ShipCell.Y));
                     }
                     break;
             }
-            return DeletedCells;
+            FieldView.Update();
+            //return DeletedCells;
         }
 
         private void RandomizeBtn_Click(object sender, EventArgs e)
@@ -439,7 +432,7 @@ namespace SeaBattle
 
         private void ShipsMappingForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            ParentForm.Show();
+            Owner.Show();
         }
     }
 }
