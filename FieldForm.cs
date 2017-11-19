@@ -12,10 +12,11 @@ namespace SeaBattle
 {
     public partial class FieldForm : Form
     {
-        public FieldForm()
-            //TODO: Here pass gameobject to maintain this form
+        private Game GameObject;
+        public FieldForm(Game GameObject)
         {
             InitializeComponent();
+            this.GameObject = GameObject;
         }
     }
 }
