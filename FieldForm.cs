@@ -161,7 +161,7 @@ namespace SeaBattle
         private void lockinterface()
         {
             //wiil be called when move is cheking on the enemy side
-            //it freezes interface until game check all vars
+            //it freezes the interface until game check all vars
             EnemyField.Enabled = false;
             FireBtn.Enabled = false;
         }

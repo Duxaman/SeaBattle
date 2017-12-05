@@ -245,7 +245,9 @@ namespace SeaBattle
                             ClientsPool[keys[i]].Close();
                         }
                         catch (Exception)
-                        {}
+                        {
+                            ClientsPool.Clear();
+                        }
                     }
                 }
             }

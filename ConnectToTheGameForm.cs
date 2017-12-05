@@ -89,7 +89,6 @@ namespace SeaBattle
                 {
                     MessageBox.Show(err.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                //TimeoutTimer.Start();
             }
         }
 
