@@ -81,22 +81,26 @@
             // 
             // SetBtn
             // 
-            this.SetBtn.Location = new System.Drawing.Point(439, 301);
+            this.SetBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.SetBtn.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.SetBtn.Location = new System.Drawing.Point(416, 301);
             this.SetBtn.Name = "SetBtn";
-            this.SetBtn.Size = new System.Drawing.Size(75, 23);
+            this.SetBtn.Size = new System.Drawing.Size(98, 34);
             this.SetBtn.TabIndex = 5;
             this.SetBtn.Text = "Применить";
-            this.SetBtn.UseVisualStyleBackColor = true;
+            this.SetBtn.UseVisualStyleBackColor = false;
             this.SetBtn.Click += new System.EventHandler(this.SetBtn_Click);
             // 
             // CancelBtn
             // 
+            this.CancelBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.CancelBtn.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.CancelBtn.Location = new System.Drawing.Point(529, 301);
             this.CancelBtn.Name = "CancelBtn";
-            this.CancelBtn.Size = new System.Drawing.Size(75, 23);
+            this.CancelBtn.Size = new System.Drawing.Size(75, 34);
             this.CancelBtn.TabIndex = 6;
             this.CancelBtn.Text = "Отменить";
-            this.CancelBtn.UseVisualStyleBackColor = true;
+            this.CancelBtn.UseVisualStyleBackColor = false;
             this.CancelBtn.Click += new System.EventHandler(this.CancelBtn_Click);
             // 
             // AdapterChoosingForm
@@ -111,7 +115,9 @@
             this.Controls.Add(this.MacLab);
             this.Controls.Add(this.IpLab);
             this.Controls.Add(this.AdapterBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "AdapterChoosingForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Выберите адаптер";
             this.ResumeLayout(false);
             this.PerformLayout();

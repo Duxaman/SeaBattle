@@ -36,6 +36,7 @@
             this.ConncectBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.IpEndPointBox = new System.Windows.Forms.Label();
+            this.StatusLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PortBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -43,7 +44,7 @@
             // 
             this.ChangeAdapterBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.ChangeAdapterBtn.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ChangeAdapterBtn.Location = new System.Drawing.Point(51, 127);
+            this.ChangeAdapterBtn.Location = new System.Drawing.Point(50, 152);
             this.ChangeAdapterBtn.Name = "ChangeAdapterBtn";
             this.ChangeAdapterBtn.Size = new System.Drawing.Size(148, 26);
             this.ChangeAdapterBtn.TabIndex = 2;
@@ -55,7 +56,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(48, 72);
+            this.label2.Location = new System.Drawing.Point(47, 97);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(21, 17);
             this.label2.TabIndex = 5;
@@ -65,7 +66,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label3.Location = new System.Drawing.Point(154, 72);
+            this.label3.Location = new System.Drawing.Point(153, 97);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 17);
             this.label3.TabIndex = 6;
@@ -74,14 +75,14 @@
             // 
             // IpBox
             // 
-            this.IpBox.Location = new System.Drawing.Point(51, 92);
+            this.IpBox.Location = new System.Drawing.Point(50, 117);
             this.IpBox.Name = "IpBox";
             this.IpBox.Size = new System.Drawing.Size(100, 20);
             this.IpBox.TabIndex = 7;
             // 
             // PortBox
             // 
-            this.PortBox.Location = new System.Drawing.Point(157, 91);
+            this.PortBox.Location = new System.Drawing.Point(156, 116);
             this.PortBox.Maximum = new decimal(new int[] {
             65536,
             0,
@@ -105,7 +106,7 @@
             // 
             this.ConncectBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.ConncectBtn.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ConncectBtn.Location = new System.Drawing.Point(51, 159);
+            this.ConncectBtn.Location = new System.Drawing.Point(50, 184);
             this.ConncectBtn.Name = "ConncectBtn";
             this.ConncectBtn.Size = new System.Drawing.Size(148, 26);
             this.ConncectBtn.TabIndex = 10;
@@ -125,19 +126,31 @@
             // 
             // IpEndPointBox
             // 
-            this.IpEndPointBox.AutoSize = true;
             this.IpEndPointBox.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.IpEndPointBox.Location = new System.Drawing.Point(78, 32);
+            this.IpEndPointBox.Location = new System.Drawing.Point(3, 17);
             this.IpEndPointBox.Name = "IpEndPointBox";
-            this.IpEndPointBox.Size = new System.Drawing.Size(12, 17);
+            this.IpEndPointBox.Size = new System.Drawing.Size(250, 32);
             this.IpEndPointBox.TabIndex = 12;
             this.IpEndPointBox.Text = " ";
+            this.IpEndPointBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // StatusLabel
+            // 
+            this.StatusLabel.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.StatusLabel.Location = new System.Drawing.Point(0, 59);
+            this.StatusLabel.Name = "StatusLabel";
+            this.StatusLabel.Size = new System.Drawing.Size(253, 24);
+            this.StatusLabel.TabIndex = 13;
+            this.StatusLabel.Text = "Не подключен";
+            this.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ConnectToTheGameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(255, 195);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(255, 220);
+            this.Controls.Add(this.StatusLabel);
             this.Controls.Add(this.IpEndPointBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.ConncectBtn);
@@ -146,7 +159,10 @@
             this.Controls.Add(this.IpBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ConnectToTheGameForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Подключиться к игре";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConnectToTheGameForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.PortBox)).EndInit();
@@ -165,5 +181,6 @@
         private System.Windows.Forms.Button ConncectBtn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label IpEndPointBox;
+        private System.Windows.Forms.Label StatusLabel;
     }
 }

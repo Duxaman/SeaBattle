@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace SeaBattle
@@ -34,6 +31,7 @@ namespace SeaBattle
     sealed public class FieldViewer : System.Windows.Forms.DataGridView
     {
         public int FieldSize { get; private set; }
+        public bool SelectionEnabled { get; set; }
         public FieldViewer(int fieldsize, System.Drawing.Point Location, int CellWidth)
         {
             System.Windows.Forms.DataGridViewButtonColumn[] Cols = new System.Windows.Forms.DataGridViewButtonColumn[fieldsize];
@@ -70,13 +68,18 @@ namespace SeaBattle
             }
             FieldSize = fieldsize;
             this.Location = Location;
-            Size = new System.Drawing.Size((RowCount + 2) * CellWidth, (ColumnCount + 1) * CellWidth);
+            Size = new System.Drawing.Size((RowCount + 1) * CellWidth, (ColumnCount + 1) * CellWidth);
+            SelectionEnabled = false;
             ClearSelection();
+            
         }
 
         private void FieldViewer_SelectionChanged(object sender, EventArgs e)
         {
-            ClearSelection();
+            if (!SelectionEnabled)
+            {
+                ClearSelection(); 
+            }
         }
 
         public void updateCellState(CellState state, Point pos)
@@ -99,20 +102,17 @@ namespace SeaBattle
     {
         /*
          Cell is identified by 4 params
-         Owner - Player/Enemy (only if cell is occupied by the ship)   does it really needed?
          Type - ship type (1,2,3,4 decks)
          shipid - identifies the ship among the others of the same type
              */
         public struct Cell
         {
             public CellState State;
-            public bool ShipOwner;
             public ShipType Type;
             public string Shipid;
-            public Cell(CellState State, bool Owner, ShipType Type, string shipid)
+            public Cell(CellState State, ShipType Type, string shipid)
             {
                 this.State = State;
-                this.ShipOwner = Owner;
                 this.Type = Type;
                 this.Shipid = shipid;
             }
@@ -121,10 +121,10 @@ namespace SeaBattle
         {
             FieldSize = Size;
             Cells = new Cell[Size,Size];
-            for(int i = 0; i < Size; ++i)   //not sure do we need this
+            for(int i = 0; i < Size; ++i)
                 for(int j = 0; j < Size; ++j)
                 {
-                    Cells[i, j] = new Cell(CellState.Free, false, ShipType.None, "-1");
+                    Cells[i, j] = new Cell(CellState.Free, ShipType.None, "-1");
                 }
         }
         private Cell[,] Cells;
@@ -137,6 +137,10 @@ namespace SeaBattle
         public void setCell(int x, int y, Cell C)
         {
             Cells[x, y] = C;
+        }
+        public void setCellState(int x, int y, CellState state)
+        {
+            Cells[x, y].State = state;
         }
 
     }

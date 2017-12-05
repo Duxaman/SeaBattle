@@ -15,6 +15,8 @@ namespace SeaBattle
     public partial class ConnectToTheGameForm : Form
     {
         private AdapterChoosingForm.AdapterCallBack Callback;
+        private delegate void SafeLabelChange(Label label, string text);
+        private delegate void SafeFormClose(ConnectToTheGameForm form);
         private Timer TimeoutTimer;
         public ConnectToTheGameForm()
         {
@@ -22,7 +24,7 @@ namespace SeaBattle
             DialogResult = DialogResult.Cancel;
             Callback = new AdapterChoosingForm.AdapterCallBack(SetAdapter);
             TimeoutTimer = new Timer();
-            TimeoutTimer.Interval = 20;
+            TimeoutTimer.Interval = 20000;
             TimeoutTimer.Tick += OnConnectTimeout;
             IpEndPointBox.Text = Program.ConnectionManager.LocalPoint.ToString();
             Program.ConnectionManager.OnConnect += OnGameConnect;
@@ -31,7 +33,14 @@ namespace SeaBattle
         private void OnConnectTimeout(object sender, EventArgs e)
         {
             MessageBox.Show("Невозможно поделючиться к " + IPAddress.Parse(IpBox.Text) + " : " + PortBox.Value.ToString(), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            Program.ConnectionManager.Disconnect();
+            try
+            {
+                Program.ConnectionManager.Disconnect();
+            }
+            catch (Exception)
+            {}
+            TimeoutTimer.Stop();
+            StatusLabel.Text = "Не подключен";
         }
 
         private void ChangeAdapterBtn_Click(object sender, EventArgs e)
@@ -43,29 +52,67 @@ namespace SeaBattle
         {
             Program.ConnectionManager.Adapter = Adapter;
             IpEndPointBox.Text = Program.ConnectionManager.LocalPoint.ToString();
+            SafeStatusChange(StatusLabel, "Не подключен");
         }
         private void OnGameConnect(object sender, EventArgs e)
         {
+            TimeoutTimer.Stop();
+            SafeStatusChange(StatusLabel, "Подключено");
             DialogResult = DialogResult.OK;
-            this.Close();
+            SafeClose(this);
         }
 
+        private void SafeClose(ConnectToTheGameForm form)
+        {
+            if (form.InvokeRequired)
+            {
+                SafeFormClose CloseForm = new SafeFormClose(SafeClose);
+                this.Invoke(CloseForm, form);
+            }
+            else
+            {
+                form.Close();
+            }
+        }
         private void ConncectBtn_Click(object sender, EventArgs e)
         {
             IPAddress Opponent;
-            if(IPAddress.TryParse(IpBox.Text, out Opponent))
+            if (IPAddress.TryParse(IpBox.Text, out Opponent))
             {
-                Program.ConnectionManager.Connect((new IPEndPoint(Opponent, Convert.ToUInt16(PortBox.Value))));
-                TimeoutTimer.Start();
-            }            
+                try
+                {
+                    Program.ConnectionManager.Connect((new IPEndPoint(Opponent, Convert.ToUInt16(PortBox.Value))));
+                    TimeoutTimer.Start();
+                    StatusLabel.Text = "Ожидание подтверждения...";
+                }
+                catch (FailedToConnectException err)
+                {
+                    MessageBox.Show(err.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                //TimeoutTimer.Start();
+            }
         }
 
+        private void SafeStatusChange(Label StatusLab, string text)
+        {
+            if (StatusLabel.InvokeRequired)
+            {
+                SafeLabelChange LabelChange = new SafeLabelChange(SafeStatusChange);
+                this.Invoke(LabelChange, new object[] { StatusLab, text });
+            }
+            else
+            {
+                StatusLab.Text = text;
+            }
+        }
         private void ConnectToTheGameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (DialogResult != DialogResult.OK)
             {
-                Program.ConnectionManager.CloseAllConnections(); 
+                Program.ConnectionManager.CloseAllConnections();
             }
+            TimeoutTimer.Stop();
+            Application.DoEvents(); //required when form is shutting from another thread
         }
     }
 }

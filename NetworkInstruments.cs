@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using SharpPcap.LibPcap;
-using SharpPcap;
 
 namespace Seabattle
 {
@@ -44,28 +42,12 @@ namespace Seabattle
             .Where(n => n.OperationalStatus == OperationalStatus.Up && n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
             .OrderByDescending(n => n.NetworkInterfaceType == NetworkInterfaceType.Ethernet).First();
         }
-        public static PhysicalAddress ResolveMac(NetworkInterface device, IPAddress Instance)
-        {
-            ARP Resolver = new ARP((LibPcapLiveDevice)NetworkInstruments.getActiveDevice(device.GetPhysicalAddress()));
-            Resolver.Timeout = new TimeSpan(0, 0, 4);
-            return Resolver.Resolve(Instance, getAdapterIPAddress(device), device.GetPhysicalAddress());
-        }
+    
         public static PhysicalAddress GetRandomMac(ref Random Randomizer)
         {
             byte[] add = new byte[6];
             Randomizer.NextBytes(add);
             return new PhysicalAddress(add);
-        }
-        public static ICaptureDevice getActiveDevice(PhysicalAddress MyActiveIntAddress)
-        {
-            CaptureDeviceList Devices = CaptureDeviceList.Instance;
-            for (int i = 0; i < Devices.Count; ++i)
-            {
-                Devices[i].Open();
-                if (Devices[i].MacAddress.Equals(MyActiveIntAddress)) return Devices[i];
-                Devices[i].Close();
-            }
-            throw new Exception(); // no connection
         }
         public static bool CompareMacs(byte[] firts, byte[] second)  //return true if the first one is bigger
         {
@@ -268,7 +250,6 @@ namespace Seabattle
             {
                 return Convert.ToString(_bytes[0]) + "." + Convert.ToString(_bytes[1]) + "." + Convert.ToString(_bytes[2]) + "." + Convert.ToString(_bytes[3]);
             }
-            //операции 
         }
     }
 }

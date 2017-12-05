@@ -24,7 +24,7 @@ namespace SeaBattle
         private int ShipCounter;   //amount of cells of current ship to be mapped
         private ShipOrientation CurShipOrientation;
         private ShipType CurShipType;
-        private Point LastPos; //the last pos of setting the ship // it'll help to identify collisions
+        private Point LastPos; //the last pos of setting the ship
         private string CurShipId;
         private bool deleteMode;
         public delegate void SelectField(Field field);
@@ -76,7 +76,7 @@ namespace SeaBattle
                         LastPos.X = e.ColumnIndex;
                         LastPos.Y = e.RowIndex;
                         CurShipId = e.ColumnIndex.ToString() + e.RowIndex.ToString();
-                        field.setCell(e.ColumnIndex, e.RowIndex, new Field.Cell(CellState.Occupied, false, CurShipType, CurShipId));
+                        field.setCell(e.ColumnIndex, e.RowIndex, new Field.Cell(CellState.Occupied, CurShipType, CurShipId));
                         FieldView.updateCellState(CellState.Occupied, new Point(e.ColumnIndex, e.RowIndex));
                         ShipCounter--;
 
@@ -115,7 +115,7 @@ namespace SeaBattle
                             if (!DeckIsNear) return;
                             LastPos.X = e.ColumnIndex;
                             LastPos.Y = e.RowIndex;   //set cell to the field and decrement counter
-                            field.setCell(e.ColumnIndex, e.RowIndex, new Field.Cell(CellState.Occupied, false, CurShipType, CurShipId));
+                            field.setCell(e.ColumnIndex, e.RowIndex, new Field.Cell(CellState.Occupied, CurShipType, CurShipId));
                             FieldView.updateCellState(CellState.Occupied, new Point(e.ColumnIndex, e.RowIndex));
                             ShipCounter--;
                         }
@@ -142,7 +142,7 @@ namespace SeaBattle
                             if (!DeckIsNear) return;
                             LastPos.X = e.ColumnIndex;
                             LastPos.Y = e.RowIndex;   //set cell and decrement counter
-                            field.setCell(e.ColumnIndex, e.RowIndex, new Field.Cell(CellState.Occupied, false, CurShipType, CurShipId));
+                            field.setCell(e.ColumnIndex, e.RowIndex, new Field.Cell(CellState.Occupied, CurShipType, CurShipId));
                             FieldView.updateCellState(CellState.Occupied, new Point(e.ColumnIndex, e.RowIndex));
                             ShipCounter--;
                         }
@@ -236,9 +236,10 @@ namespace SeaBattle
                 if (MessageBox.Show("Завершить расстановку кораблей?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     // init new form and start game
+                    this.Hide();
                     ConfirmField(field);
                     this.Close();
-                } 
+                }
             }
             else
                 MessageBox.Show("Вы расставили корабль", "Ошибка");
@@ -327,7 +328,7 @@ namespace SeaBattle
 
         private void ConfirmShipBtn_Click(object sender, EventArgs e)
         {
-            if(ShipCounter == 0)
+            if (ShipCounter == 0)
             {
                 FieldView.Enabled = false;
                 ResetShipBtn.Enabled = false;
@@ -367,7 +368,7 @@ namespace SeaBattle
             if (LastPos.X != -1 && LastPos.Y != -1)
             {
                 CurCounters[(byte)CurShipType]++;
-                DeleteShipFromOneDeck(LastPos, CurShipOrientation);               
+                DeleteShipFromOneDeck(LastPos, CurShipOrientation);
             }
             FieldView.Enabled = false;
             ResetShipBtn.Enabled = false;
@@ -387,15 +388,15 @@ namespace SeaBattle
                 case ShipOrientation.Vertical:
                     {
                         int pos = ShipCell.Y;
-                        while ( (pos >= 0) && field.getCell(ShipCell.X, pos).State == CellState.Occupied)    //move to the start
+                        while ((pos >= 0) && field.getCell(ShipCell.X, pos).State == CellState.Occupied)    //move to the start
                         {
-                            pos--;                            
+                            pos--;
                         }
                         pos++;
-                        for (int y = pos; y < field.FieldSize && field.getCell(ShipCell.X, y).State != CellState.Free; ++y)    //check
+                        for (int y = pos; y < field.FieldSize && field.getCell(ShipCell.X, y).State != CellState.Free; ++y)   
                         {
                             DeletedCells++;
-                            field.setCell(ShipCell.X, y, new Field.Cell(CellState.Free, false, ShipType.None, "-1"));
+                            field.setCell(ShipCell.X, y, new Field.Cell(CellState.Free, ShipType.None, "-1"));
                             FieldView.updateCellState(CellState.Free, new Point(ShipCell.X, y));
                         }
                     }
@@ -411,7 +412,7 @@ namespace SeaBattle
                         for (int x = pos; x < field.FieldSize && field.getCell(x, ShipCell.Y).State != CellState.Free; ++x)
                         {
                             DeletedCells++;
-                            field.setCell(x, ShipCell.Y, new Field.Cell(CellState.Free, false, ShipType.None, "-1"));
+                            field.setCell(x, ShipCell.Y, new Field.Cell(CellState.Free, ShipType.None, "-1"));
                             FieldView.updateCellState(CellState.Free, new Point(x, ShipCell.Y));
                         }
                     }
@@ -419,7 +420,7 @@ namespace SeaBattle
                 case ShipOrientation.None:
                     {
                         DeletedCells++;
-                        field.setCell(ShipCell.X, ShipCell.Y, new Field.Cell(CellState.Free, false, ShipType.None, "-1"));
+                        field.setCell(ShipCell.X, ShipCell.Y, new Field.Cell(CellState.Free, ShipType.None, "-1"));
                         FieldView.updateCellState(CellState.Free, new Point(ShipCell.X, ShipCell.Y));
                     }
                     break;
@@ -427,16 +428,218 @@ namespace SeaBattle
             FieldView.Update();
             //return DeletedCells;
         }
+        private void Determineborders(ref int hst, ref int vst, ref int hend, ref int vend, Point Start, Point End)
+        {
+            vst = Start.Y == 0 ? 0 : Start.Y - 1;
+            hst = Start.X == 0 ? 0 : Start.X - 1;
+            vend = End.Y == field.FieldSize - 1 ? field.FieldSize - 1 : End.Y + 1;
+            hend = End.X == field.FieldSize - 1 ? field.FieldSize - 1: End.X + 1;
+        }
+        private bool CheckShips(Point Start, Point End)  //returns false, if there are any ships in area around start and end
+        {
+            int hst, vst, hend, vend;
+            hst = vst = hend = vend = 0; // borders of checking area
+            Determineborders(ref hst, ref vst, ref hend, ref vend, Start, End);
+            for (int i = hst; i <= hend; ++i)
+                for (int j = vst; j <= vend; ++j)
+                {
+                    if (field.getCell(i, j).State != CellState.Free)
+                    {
+                        return false;
+                    }
+                }
+            return true;
+        }
 
         private void RandomizeBtn_Click(object sender, EventArgs e)
         {
+            /*
+             method generate ships, 
+             first create start and end pos, then check if there are another ships nearby, if yes generate again, else plant ship to the field
+             
+             */
+            ResetAll();
+            Random Randomizer = new Random();
+            bool generated = false;
+            ShipOrientation Orientation = ShipOrientation.None;
+            Point Start = new Point();
+            Point End = new Point();
+            while (!generated)
+            {
+                Orientation = (Randomizer.Next(2) == 0) ? ShipOrientation.Vertical : ShipOrientation.Horizontal;   //randomize orientation
+                if (Orientation == ShipOrientation.Horizontal)
+                {
+                    Start.X = Randomizer.Next(7);
+                    Start.Y = Randomizer.Next(10);
+                    End.Y = Start.Y;
+                    End.X = Start.X + 3;
+                    if (CheckShips(Start, End)) generated = true;
+                }
+                else
+                {
+                    Start.X = Randomizer.Next(10);
+                    Start.Y = Randomizer.Next(7);
+                    End.Y = Start.Y + 3;
+                    End.X = Start.X;
+                    if (CheckShips(Start, End)) generated = true;
+                }
+            }
+            //plant ship
+            spawnShip(Start, End, ShipType.FourDeck);
+            for (int i = 0; i < 2; ++i)
+            {
+                generated = false;
+                while (!generated)
+                {
+                    Orientation = (Randomizer.Next(2) == 0) ? ShipOrientation.Vertical : ShipOrientation.Horizontal;
+                    if (Orientation == ShipOrientation.Horizontal)
+                    {
+                        Start.X = Randomizer.Next(8);
+                        Start.Y = Randomizer.Next(10);
+                        End.Y = Start.Y;
+                        End.X = Start.X + 2;
+                        if (CheckShips(Start, End)) generated = true;
+                    }
+                    else
+                    {
+                        Start.X = Randomizer.Next(10);
+                        Start.Y = Randomizer.Next(8);
+                        End.Y = Start.Y + 2;
+                        End.X = Start.X;
+                        if (CheckShips(Start, End)) generated = true;
+                    }
+                }
+                //plant ship
+                spawnShip(Start, End, ShipType.ThreeDeck);
+            }
+            for (int i = 0; i < 3; ++i)
+            {
+                generated = false;
+                while (!generated)
+                {
+                    Orientation = (Randomizer.Next(2) == 0) ? ShipOrientation.Vertical : ShipOrientation.Horizontal;
+                    if (Orientation == ShipOrientation.Horizontal)
+                    {
+                        Start.X = Randomizer.Next(9);
+                        Start.Y = Randomizer.Next(10);
+                        End.Y = Start.Y;
+                        End.X = Start.X + 1;
+                        if (CheckShips(Start, End)) generated = true;
+                    }
+                    else
+                    {
+                        Start.X = Randomizer.Next(10);
+                        Start.Y = Randomizer.Next(9);
+                        End.Y = Start.Y + 1;
+                        End.X = Start.X;
+                        if (CheckShips(Start, End)) generated = true;
+                    }
+                }
+                //plant ship
+                spawnShip(Start, End, ShipType.TwoDeck);
+            }
+            for (int i = 0; i < 4; ++i)
+            {
+                generated = false;
+                while (!generated)
+                {
+                    Start.X = Randomizer.Next(10);
+                    Start.Y = Randomizer.Next(10);
+                    if (CheckShips(Start, Start)) generated = true;
+                }
+                //plant ship
+                spawnShip(Start, Start, ShipType.OneDeck);
+            }
 
         }
-        
 
+        private void spawnShip(Point Start, Point End, ShipType ShType)
+        {
+            /*
+             * method spawn ship to the field, and decrement counters bounded with this shiptype
+             */
+            switch (ShType)
+            {
+                case ShipType.FourDeck:
+
+                    CurCounters[0]--;
+                    FourLabel.Text = CurCounters[0].ToString();
+                    for (int i = Start.X; i <= End.X; ++i)
+                        for (int j = Start.Y; j <= End.Y; ++j)
+                        {
+                            field.setCell(i, j, new Field.Cell(CellState.Occupied, ShipType.FourDeck, Start.X.ToString() + Start.Y.ToString()));
+                            FieldView.updateCellState(CellState.Occupied, new Point(i, j));
+                        }
+
+                    break;
+                case ShipType.ThreeDeck:
+                    CurCounters[1]--;
+                    ThreeLabel.Text = CurCounters[1].ToString();
+                    for (int i = Start.X; i <= End.X; ++i)
+                        for (int j = Start.Y; j <= End.Y; ++j)
+                        {
+                            field.setCell(i, j, new Field.Cell(CellState.Occupied, ShipType.ThreeDeck, Start.X.ToString() + Start.Y.ToString()));
+                            FieldView.updateCellState(CellState.Occupied, new Point(i, j));
+                        }
+                    break;
+                case ShipType.TwoDeck:
+                    CurCounters[2]--;
+                    TwoLabel.Text = CurCounters[2].ToString();
+                    for (int i = Start.X; i <= End.X; ++i)
+                        for (int j = Start.Y; j <= End.Y; ++j)
+                        {
+                            field.setCell(i, j, new Field.Cell(CellState.Occupied, ShipType.TwoDeck, Start.X.ToString() + Start.Y.ToString()));
+                            FieldView.updateCellState(CellState.Occupied, new Point(i, j));
+                        }
+                    break;
+                case ShipType.OneDeck:
+                    CurCounters[3]--;
+                    OneLabel.Text = CurCounters[3].ToString();
+                    field.setCell(Start.X, Start.Y, new Field.Cell(CellState.Occupied, ShipType.OneDeck, Start.X.ToString() + Start.Y.ToString()));
+                    FieldView.updateCellState(CellState.Occupied, Start);
+
+                    break;
+            }
+
+        }
         private void ShipsMappingForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             Owner.Show();
+        }
+
+        private void ResetAll()  //reset all to start pos
+        {
+            FieldView.Enabled = false;
+            for (int i = 0; i < 4; ++i)
+            {
+                CurCounters[i] = i + 1;
+            }
+            this.Controls.Add(FieldView);
+            FieldView.Enabled = false;
+            ResetShipBtn.Enabled = false;
+            ConfirmShipBtn.Enabled = false;
+            deleteMode = false;
+            Map1Btn.Enabled = true;
+            Map2Btn.Enabled = true;
+            Map3Btn.Enabled = true;
+            Map4Btn.Enabled = true;
+            OneLabel.Text = CurCounters[3].ToString();
+            TwoLabel.Text = CurCounters[2].ToString();
+            ThreeLabel.Text = CurCounters[1].ToString();
+            FourLabel.Text = CurCounters[0].ToString();
+            ShipCounter = 0;
+            LastPos.X = -1;
+            LastPos.Y = -1;
+            for(int i = 0; i < field.FieldSize; ++i)
+                for(int j = 0; j < field.FieldSize; ++j)
+                {
+                    field.setCell(i, j, new Field.Cell(CellState.Free, ShipType.None, "-1"));
+                    FieldView.updateCellState(CellState.Free, new Point(i,j));
+                }
+        }
+        private void ResetAllBtn_Click(object sender, EventArgs e)
+        {
+            ResetAll();
         }
     }
 }

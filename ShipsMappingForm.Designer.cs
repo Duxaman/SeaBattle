@@ -41,6 +41,8 @@
             this.ThreeLabel = new System.Windows.Forms.Label();
             this.TwoLabel = new System.Windows.Forms.Label();
             this.OneLabel = new System.Windows.Forms.Label();
+            this.RandomBtn = new System.Windows.Forms.Button();
+            this.ResetAllBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Map4Btn
@@ -107,7 +109,7 @@
             // 
             this.ConfirmShipBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.ConfirmShipBtn.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ConfirmShipBtn.Location = new System.Drawing.Point(339, 559);
+            this.ConfirmShipBtn.Location = new System.Drawing.Point(103, 559);
             this.ConfirmShipBtn.Name = "ConfirmShipBtn";
             this.ConfirmShipBtn.Size = new System.Drawing.Size(190, 30);
             this.ConfirmShipBtn.TabIndex = 7;
@@ -119,7 +121,7 @@
             // 
             this.ResetShipBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.ResetShipBtn.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ResetShipBtn.Location = new System.Drawing.Point(535, 559);
+            this.ResetShipBtn.Location = new System.Drawing.Point(299, 559);
             this.ResetShipBtn.Name = "ResetShipBtn";
             this.ResetShipBtn.Size = new System.Drawing.Size(160, 30);
             this.ResetShipBtn.TabIndex = 8;
@@ -133,7 +135,7 @@
             this.CancelBtn.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.CancelBtn.Location = new System.Drawing.Point(6, 559);
             this.CancelBtn.Name = "CancelBtn";
-            this.CancelBtn.Size = new System.Drawing.Size(215, 30);
+            this.CancelBtn.Size = new System.Drawing.Size(91, 30);
             this.CancelBtn.TabIndex = 10;
             this.CancelBtn.Text = "Отмена";
             this.CancelBtn.UseVisualStyleBackColor = false;
@@ -192,11 +194,37 @@
             this.OneLabel.Text = "4";
             this.OneLabel.Click += new System.EventHandler(this.label4_Click);
             // 
+            // RandomBtn
+            // 
+            this.RandomBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.RandomBtn.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RandomBtn.Location = new System.Drawing.Point(589, 559);
+            this.RandomBtn.Name = "RandomBtn";
+            this.RandomBtn.Size = new System.Drawing.Size(242, 30);
+            this.RandomBtn.TabIndex = 16;
+            this.RandomBtn.Text = "Расставить случайно";
+            this.RandomBtn.UseVisualStyleBackColor = false;
+            this.RandomBtn.Click += new System.EventHandler(this.RandomizeBtn_Click);
+            // 
+            // ResetAllBtn
+            // 
+            this.ResetAllBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.ResetAllBtn.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ResetAllBtn.Location = new System.Drawing.Point(465, 559);
+            this.ResetAllBtn.Name = "ResetAllBtn";
+            this.ResetAllBtn.Size = new System.Drawing.Size(118, 30);
+            this.ResetAllBtn.TabIndex = 17;
+            this.ResetAllBtn.Text = "Сбросить все";
+            this.ResetAllBtn.UseVisualStyleBackColor = false;
+            this.ResetAllBtn.Click += new System.EventHandler(this.ResetAllBtn_Click);
+            // 
             // ShipsMappingForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1013, 601);
+            this.Controls.Add(this.ResetAllBtn);
+            this.Controls.Add(this.RandomBtn);
             this.Controls.Add(this.OneLabel);
             this.Controls.Add(this.TwoLabel);
             this.Controls.Add(this.ThreeLabel);
@@ -210,6 +238,7 @@
             this.Controls.Add(this.Map2Btn);
             this.Controls.Add(this.Map3Btn);
             this.Controls.Add(this.Map4Btn);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "ShipsMappingForm";
             this.Text = "Найстройте корабли";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ShipsMappingForm_FormClosed);
@@ -232,5 +261,7 @@
         private System.Windows.Forms.Label ThreeLabel;
         private System.Windows.Forms.Label TwoLabel;
         private System.Windows.Forms.Label OneLabel;
+        private System.Windows.Forms.Button RandomBtn;
+        private System.Windows.Forms.Button ResetAllBtn;
     }
 }

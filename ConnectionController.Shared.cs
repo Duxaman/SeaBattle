@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
 using System.Threading;
+using System.Timers;
 using static Seabattle.NetworkInstruments;
 
 namespace SeaBattle
@@ -14,14 +15,19 @@ namespace SeaBattle
     /*
  * When one wants to play with server machine, it elicits tcp connection first
  * after connection was established, it waits until server responds with confirmation or rejection
- * In order to perform that, host send PlayRequest message rigth after it has connected to the server
  * Server side collects all players who is waiting, (keeps connections alive), and shows that info in the form to the user
  * User can choose desired player to play
- * The choosen one is selected by SelectPlayerMethod, which send PlayerAccept message to him, and allow game traffic through this player.
+ * The choosen one is selected by SelectPlayerMethod, which send PlayAccept message to host, and allow game traffic through this player.
  * Afrer allowing game traffic all other waiting users are discarding from the user pool
  * After receivig that message, host allow game traffic too. 
+ * 1)user have choosen the player
+ * server -> playaccpet -> host --> prepare for game
+ * host ->  playaccept -> server --> prepare for game
+ * 
+ * 
  * */
-    sealed public class ConnectionController
+
+    sealed public partial class ConnectionController
     {
         private NetworkInterface adapter;
         private volatile IPEndPoint EnemyPoint;
@@ -29,24 +35,48 @@ namespace SeaBattle
         private TcpListener Server;
         private volatile bool GameTrafficAllowed;
         private static ConnectionController instance;
+        private System.Timers.Timer ConnectionChecker;
         private Object Locker;
-        private bool Mode;
-        //public ControllerState Status { get; private set; }
-        private ConnectionController()
+        public bool Mode { get; private set; }
+        public byte MessageSize { get; set; }
+        private ConnectionController(byte MessageSize)
         {
-            Adapter = getAnyAdaptor();
+            Locker = new object();
             EnemyPoint = new IPEndPoint(IPAddress.Any, 0);
             GameTrafficAllowed = false;
             ClientsPool = new Dictionary<string, TcpClient>();
+            ConnectionChecker = new System.Timers.Timer();
+            ConnectionChecker.Elapsed += ConnectionChecker_Elapsed;
+            ConnectionChecker.Interval = 3000;
+            Adapter = getAnyAdaptor();
             Mode = false;
+            this.MessageSize = MessageSize;
         }
+
+        private void ConnectionChecker_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                SendMessage(ClientsPool[EnemyPoint.ToString()].GetStream(), MessageCode.Echo);
+            }
+            catch (Exception)
+            {
+                ConnectionChecker.Stop();
+                OnConnectionLost(this, new EventArgs());
+            }
+            /*
+             send to the opponent echo
+             if connection was lost tcpclient wont be able to deliver the message, and onconnectionlost wiil be raised
+             */
+        }
+
         public static ConnectionController Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    instance = new ConnectionController();
+                    instance = new ConnectionController(14);
                 }
                 return instance;
             }
@@ -56,6 +86,7 @@ namespace SeaBattle
             PlayRequest,
             PlayAccept,
             GameData,
+            Echo,
             Fin
         }
         private void MaintainConnection(Object Param)
@@ -65,7 +96,7 @@ namespace SeaBattle
             NetworkStream Stream = Connection.GetStream();
             Connection.ReceiveBufferSize = 1000;
             Connection.ReceiveTimeout = 200;
-            byte[] buffer = new byte[100]; //TODO: Determine game message size
+            byte[] buffer = new byte[MessageSize]; 
             bool DataCollected;
             bool Finished = false;
             try
@@ -86,14 +117,15 @@ namespace SeaBattle
                                     {
                                         if (Mode)                                                          //if its the server side,
                                         {
-                                            SendMessage(Stream, MessageCode.PlayAccept);                   // answer with confirmation
-                                            ClearWatingList();                                                   //discard other players
-                                        }
+                                            ClearWatingList();                                             //discard other players
+                                        } 
                                         else
                                         {
-                                            OnConnect(this, new EventArgs());                              //if its host side invoke the event that announce to user that connection was succesfull
+                                            SendMessage(Stream, MessageCode.PlayAccept);                   //answer with ack msg
+                                            OnConnect(this, new EventArgs());                              //if its host side invoke the event that announce to user that connection was succesfully established
                                         }
                                         GameTrafficAllowed = true;
+                                        ConnectionChecker.Start();                                         //enable connection checker timer
                                     }
                                 }
                                 break;
@@ -102,20 +134,33 @@ namespace SeaBattle
                                 {
                                     if (GameTrafficAllowed)                                                //and game traffic allowed
                                     {
+                                        while(!DataCollected && (Connection.Connected && !Finished))
+                                        {
+                                            if(Connection.Available >= MessageSize)
+                                            {
+                                                DataCollected = true;
+                                                Stream.Read(buffer, 0, MessageSize);
+                                            }
+                                        }
                                         //collect all data depending on the gamedata size
-                                        OnMessageReceive(this, new MessageReceiveEventArguments());        //invoke event to handle game data
+                                        if (DataCollected)
+                                        {
+                                            OnMessageReceive(this, new GameData(buffer));    
+                                        }  
                                     }
                                 }
                                 break;
                             case (int)MessageCode.Fin:
                                 Finished = true;
                                 break;
+                            default:;
+                                break;
                         }
 
                     }
                 }
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException err)
             {
                 return;
             }
@@ -127,6 +172,8 @@ namespace SeaBattle
                 {
                     if (EnemyPoint.ToString() == key) //if choosen one was choosen(its in the poolist), and current stream equals
                     {
+                        ConnectionChecker.Stop();        //stops the timer
+                        GameTrafficAllowed = false;       //forbid game traffic
                         OnConnectionLost(this, new EventArgs()); // connection to the opponnet was lost
 
                     }
@@ -135,34 +182,19 @@ namespace SeaBattle
             ClientsPool[key].Close();
             ClientsPool.Remove(key);  //if connection was lost, or finished, that host should be deleted from the pool
         }
-        private void ClearWatingList()
-        {
-            //clears all waiting users except the choosen one
-            Dictionary<string, TcpClient>.KeyCollection Keys = ClientsPool.Keys;
-            foreach (string key in Keys)
-            {
-                if (key != EnemyPoint.ToString())
-                {
-                    ClientsPool.Remove(key);
-                }
-            }
-        }
+       
         private void SendMessage(NetworkStream ClientStream, MessageCode Code, params byte[] GameData)
         {
-
+            ClientStream.WriteByte((byte)Code);
             if (Code == MessageCode.GameData)
             {
-                ClientStream.WriteByte((byte)Code);
+                ClientStream.Write(GameData, 0, GameData.Length);
             }
-            ClientStream.Write(new byte[] { (byte)Code }.Concat(GameData).ToArray(), 0, GameData.Length + 1);
+           
 
 
         }
         public IPEndPoint LocalPoint { get; private set; }
-        public class MessageReceiveEventArguments : EventArgs
-        {
-            public byte[] GameData;
-        }
 
         public NetworkInterface Adapter
         {
@@ -175,132 +207,50 @@ namespace SeaBattle
                 adapter = value;
                 LocalPoint = new IPEndPoint(getAdapterIPAddress(adapter), 0);
                 if (Mode) Server.Stop();
-                //determine adapter address
+                CloseAllConnections();
             }
         }
 
-        public void BeginAcceptConnections()
-        {
-            //elicit accpeting new connections
-            Server = new TcpListener(LocalPoint);
-            Server.Start();
-            LocalPoint = ((IPEndPoint)Server.LocalEndpoint);
-            Mode = true;
-            Server.BeginAcceptTcpClient(new AsyncCallback(ClientOnTryConnect), Server);
-        }
-
-        private void ClientOnTryConnect(IAsyncResult res)
+        public void SendMsg(object sender, GameData data)
         {
             try
             {
-                TcpListener Server = res.AsyncState as TcpListener;
-                TcpClient NewHost = Server.EndAcceptTcpClient(res);
-                string key = ((IPEndPoint)NewHost.Client.RemoteEndPoint).ToString();
-                if (!ClientsPool.ContainsKey(key))
-                {
-                    Thread Handler = new Thread(new ParameterizedThreadStart(MaintainConnection));
-                    ClientsPool.Add(key, NewHost);
-                    Handler.Start(NewHost);
-                }
-                Server.BeginAcceptTcpClient(new AsyncCallback(ClientOnTryConnect), Server);
-            }
-            catch (ObjectDisposedException)
-            {
-                return;
-            }
-        }
-        public void StopAcceptConnections()
-        {
-            Server.Stop();
-        }
-        //by invoking this method server sends Playaccept message, to confirm his choose
-        public void SelectPlayer(IPEndPoint player)
-        {
-            if (ClientsPool.ContainsKey(player.ToString()))
-            {
-                EnemyPoint = player;
-                SendMessage(ClientsPool[EnemyPoint.ToString()].GetStream(), MessageCode.PlayAccept);
-            }
-            else
-            {
-                throw new FailedToConnectException("Хост с таким адресом недоступен, похоже он отключился");
-                //player was disconnected exception
-            }
-        }
-        //returns wairing players list
-        public string[] GetPlayersList()
-        {
-            List<string> textclients = new List<string>();
-            lock (Locker)
-            {
-                foreach (KeyValuePair<string, TcpClient> client in ClientsPool)
-                {
-                    textclients.Add(client.ToString());
-                }
-            }
-            return textclients.ToArray();
-        }
-        public void SendMsg(byte[] GameData)
-        {
-            try
-            {
-                SendMessage(ClientsPool[EnemyPoint.ToString()].GetStream(), MessageCode.GameData, GameData);
+                SendMessage(ClientsPool[EnemyPoint.ToString()].GetStream(), MessageCode.GameData, data.Bytes);
             }
             catch (Exception err)
             {
-
+                ConnectionChecker.Stop();
                 OnConnectionLost(this, new EventArgs());
             }
             //send message to the connected opponent, if there is no connected one raised an exception
         }
-        public void Connect(IPEndPoint Opponent)
-        {
-            //will be called when player 2 wants to connect to the host
-            //method will add player to pool, and elicit select player
-            TcpClient NewPlayer = new TcpClient(LocalPoint);
-            try
-            {
-                NewPlayer.Connect(Opponent);
-                Mode = false;
-                ClientsPool.Add(NewPlayer.ToString(), NewPlayer);
-                EnemyPoint = Opponent;
-                Thread Handler = new Thread(new ParameterizedThreadStart(MaintainConnection));
-                Handler.Start(NewPlayer);
-                SendMessage(NewPlayer.GetStream(), MessageCode.PlayRequest);
 
-            }
-            catch (SocketException err)
-            {
-                //throw connection timeout
-                throw new FailedToConnectException("Невозможно подключиться к серверу");
-            }
-        }
-        public void Disconnect()
-        {
-            if (!Mode)
-            {
-                if (ClientsPool.ContainsKey(EnemyPoint.ToString()))
-                {
-                    SendMessage(ClientsPool[EnemyPoint.ToString()].GetStream(), MessageCode.Fin);
-                    ClientsPool[EnemyPoint.ToString()].Close();
-                }
-            }
-        }
         //Will close all established connections
         public void CloseAllConnections()
         {
+            ConnectionChecker.Stop();
             EnemyPoint = new IPEndPoint(IPAddress.Any, 0);
             GameTrafficAllowed = false;
             Mode = false;
+            string[] keys = ClientsPool.Keys.ToArray();
             lock(Locker)
             {
-                foreach (KeyValuePair<string,TcpClient> Peer in ClientsPool)
+                for(int i = 0; i < keys.Length; ++i)
                 {
-                    Peer.Value.Close();
+                    if(ClientsPool.ContainsKey(keys[i]))
+                    {
+                        try
+                        {
+                            SendMessage(ClientsPool[keys[i]].GetStream(), MessageCode.Fin);
+                            ClientsPool[keys[i]].Close();
+                        }
+                        catch (Exception)
+                        {}
+                    }
                 }
             }
         }
-        public event EventHandler<MessageReceiveEventArguments> OnMessageReceive;
+        public event EventHandler<GameData> OnMessageReceive;
         public event EventHandler<EventArgs> OnConnectionLost;
         public event EventHandler<EventArgs> OnConnect;
     }

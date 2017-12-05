@@ -23,10 +23,9 @@ namespace SeaBattle
         {
             ShipsMappingForm StartForm = new ShipsMappingForm(ProcessField);
             gamemode = true;
-            //StartForm.Owner = this;
-            //StartForm.Show();
-            this.Hide();
-            ProcessField(new Field(10));          
+            StartForm.Owner = this;
+            StartForm.Show();
+            this.Hide();   
 
         }
 
@@ -40,8 +39,8 @@ namespace SeaBattle
                 {
                     GameForm = new FieldForm(new Game(NewField, true));
                     GameForm.Owner = this;
-                    GameForm.Show();
-                    return;
+                    this.Hide();
+                    GameForm.ShowDialog();
                 }
 
             }
@@ -53,12 +52,11 @@ namespace SeaBattle
                 {
                     GameForm = new FieldForm(new Game(NewField, false));
                     GameForm.Owner = this;
-                    GameForm.Show();
-                    return;
+                    this.Hide();
+                    GameForm.ShowDialog();
                 }
             }
             this.Show();
-
         }
 
         private void ConnectToGameBtn_Click(object sender, EventArgs e)
@@ -66,9 +64,8 @@ namespace SeaBattle
             ShipsMappingForm StartForm = new ShipsMappingForm(ProcessField);
             gamemode = false;
             this.Hide();
-            ProcessField(new Field(10));
-            //StartForm.Owner = this;
-            //StartForm.Show();
+            StartForm.Owner = this;
+            StartForm.Show();
         }
 
         private void QuitBtn_Click(object sender, EventArgs e)

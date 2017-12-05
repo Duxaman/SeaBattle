@@ -103,12 +103,12 @@
             // 
             // IpEndPointBox
             // 
-            this.IpEndPointBox.AutoSize = true;
             this.IpEndPointBox.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.IpEndPointBox.Location = new System.Drawing.Point(89, 46);
+            this.IpEndPointBox.Location = new System.Drawing.Point(12, 26);
             this.IpEndPointBox.Name = "IpEndPointBox";
-            this.IpEndPointBox.Size = new System.Drawing.Size(0, 17);
+            this.IpEndPointBox.Size = new System.Drawing.Size(288, 37);
             this.IpEndPointBox.TabIndex = 17;
+            this.IpEndPointBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // WaitForPlayerForm
             // 
@@ -122,7 +122,9 @@
             this.Controls.Add(this.ChooseAdapter);
             this.Controls.Add(this.ConfirmBtn);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "WaitForPlayerForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Ожидание соперника";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WaitForPlayerForm_FormClosing);
             this.ResumeLayout(false);

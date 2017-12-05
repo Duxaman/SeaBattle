@@ -59,7 +59,7 @@ namespace SeaBattle
             if (DialogResult != DialogResult.OK)
             {
                 DialogResult = DialogResult.Cancel;
-                Program.ConnectionManager.StopAcceptConnections(); //TODO: will it be an exception if we'll stop already stopped server
+                Program.ConnectionManager.StopAcceptConnections();
                 Program.ConnectionManager.CloseAllConnections(); 
             }
         }

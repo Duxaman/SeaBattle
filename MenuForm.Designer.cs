@@ -105,7 +105,9 @@
             this.ClientSize = new System.Drawing.Size(561, 565);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "MenuForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Морской бой";
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);

@@ -28,21 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.dataGridViewButtonColumn1 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.dataGridViewButtonColumn2 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.dataGridViewButtonColumn3 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.dataGridViewButtonColumn4 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.dataGridViewButtonColumn5 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.dataGridViewButtonColumn6 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.dataGridViewButtonColumn7 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.dataGridViewButtonColumn8 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.dataGridViewButtonColumn9 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.dataGridViewButtonColumn10 = new System.Windows.Forms.DataGridViewButtonColumn();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.ThreeLabel = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.WhoIsMoveLabel = new System.Windows.Forms.Label();
             this.ResetChoiceBtn = new System.Windows.Forms.Button();
             this.FireBtn = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
@@ -58,99 +47,7 @@
             this.E3Left = new System.Windows.Forms.Label();
             this.E2Left = new System.Windows.Forms.Label();
             this.E1Left = new System.Windows.Forms.Label();
-            this.SurrenderBtn = new System.Windows.Forms.Button();
-            this.StepPos = new System.Windows.Forms.Label();
-            this.StepRes = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AllowUserToResizeColumns = false;
-            this.dataGridView1.AllowUserToResizeRows = false;
-            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView1.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedHeaders;
-            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.Control;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewButtonColumn1,
-            this.dataGridViewButtonColumn2,
-            this.dataGridViewButtonColumn3,
-            this.dataGridViewButtonColumn4,
-            this.dataGridViewButtonColumn5,
-            this.dataGridViewButtonColumn6,
-            this.dataGridViewButtonColumn7,
-            this.dataGridViewButtonColumn8,
-            this.dataGridViewButtonColumn9,
-            this.dataGridViewButtonColumn10});
-            this.dataGridView1.Location = new System.Drawing.Point(756, 1);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.dataGridView1.Size = new System.Drawing.Size(550, 550);
-            this.dataGridView1.TabIndex = 2;
-            // 
-            // dataGridViewButtonColumn1
-            // 
-            this.dataGridViewButtonColumn1.HeaderText = "A";
-            this.dataGridViewButtonColumn1.Name = "dataGridViewButtonColumn1";
-            this.dataGridViewButtonColumn1.ReadOnly = true;
-            // 
-            // dataGridViewButtonColumn2
-            // 
-            this.dataGridViewButtonColumn2.HeaderText = "B";
-            this.dataGridViewButtonColumn2.Name = "dataGridViewButtonColumn2";
-            this.dataGridViewButtonColumn2.ReadOnly = true;
-            // 
-            // dataGridViewButtonColumn3
-            // 
-            this.dataGridViewButtonColumn3.HeaderText = "C";
-            this.dataGridViewButtonColumn3.Name = "dataGridViewButtonColumn3";
-            this.dataGridViewButtonColumn3.ReadOnly = true;
-            // 
-            // dataGridViewButtonColumn4
-            // 
-            this.dataGridViewButtonColumn4.HeaderText = "D";
-            this.dataGridViewButtonColumn4.Name = "dataGridViewButtonColumn4";
-            this.dataGridViewButtonColumn4.ReadOnly = true;
-            // 
-            // dataGridViewButtonColumn5
-            // 
-            this.dataGridViewButtonColumn5.HeaderText = "E";
-            this.dataGridViewButtonColumn5.Name = "dataGridViewButtonColumn5";
-            this.dataGridViewButtonColumn5.ReadOnly = true;
-            // 
-            // dataGridViewButtonColumn6
-            // 
-            this.dataGridViewButtonColumn6.HeaderText = "F";
-            this.dataGridViewButtonColumn6.Name = "dataGridViewButtonColumn6";
-            this.dataGridViewButtonColumn6.ReadOnly = true;
-            // 
-            // dataGridViewButtonColumn7
-            // 
-            this.dataGridViewButtonColumn7.HeaderText = "G";
-            this.dataGridViewButtonColumn7.Name = "dataGridViewButtonColumn7";
-            this.dataGridViewButtonColumn7.ReadOnly = true;
-            // 
-            // dataGridViewButtonColumn8
-            // 
-            this.dataGridViewButtonColumn8.HeaderText = "H";
-            this.dataGridViewButtonColumn8.Name = "dataGridViewButtonColumn8";
-            this.dataGridViewButtonColumn8.ReadOnly = true;
-            // 
-            // dataGridViewButtonColumn9
-            // 
-            this.dataGridViewButtonColumn9.HeaderText = "I";
-            this.dataGridViewButtonColumn9.Name = "dataGridViewButtonColumn9";
-            this.dataGridViewButtonColumn9.ReadOnly = true;
-            // 
-            // dataGridViewButtonColumn10
-            // 
-            this.dataGridViewButtonColumn10.HeaderText = "J";
-            this.dataGridViewButtonColumn10.Name = "dataGridViewButtonColumn10";
-            this.dataGridViewButtonColumn10.ReadOnly = true;
             // 
             // label1
             // 
@@ -182,15 +79,15 @@
             this.ThreeLabel.TabIndex = 14;
             this.ThreeLabel.Text = "Ход:";
             // 
-            // label3
+            // WhoIsMoveLabel
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Arial Black", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label3.Location = new System.Drawing.Point(623, 88);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(58, 27);
-            this.label3.TabIndex = 15;
-            this.label3.Text = "Ваш";
+            this.WhoIsMoveLabel.Font = new System.Drawing.Font("Arial Black", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.WhoIsMoveLabel.Location = new System.Drawing.Point(562, 85);
+            this.WhoIsMoveLabel.Name = "WhoIsMoveLabel";
+            this.WhoIsMoveLabel.Size = new System.Drawing.Size(188, 27);
+            this.WhoIsMoveLabel.TabIndex = 15;
+            this.WhoIsMoveLabel.Text = "Ваш";
+            this.WhoIsMoveLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ResetChoiceBtn
             // 
@@ -202,6 +99,7 @@
             this.ResetChoiceBtn.TabIndex = 16;
             this.ResetChoiceBtn.Text = "Сбросить выбор";
             this.ResetChoiceBtn.UseVisualStyleBackColor = false;
+            this.ResetChoiceBtn.Click += new System.EventHandler(this.ResetChoiceBtn_Click);
             // 
             // FireBtn
             // 
@@ -213,6 +111,7 @@
             this.FireBtn.TabIndex = 17;
             this.FireBtn.Text = "Огонь!";
             this.FireBtn.UseVisualStyleBackColor = false;
+            this.FireBtn.Click += new System.EventHandler(this.FireBtn_Click);
             // 
             // label4
             // 
@@ -344,45 +243,11 @@
             this.E1Left.TabIndex = 30;
             this.E1Left.Text = "0";
             // 
-            // SurrenderBtn
-            // 
-            this.SurrenderBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.SurrenderBtn.Font = new System.Drawing.Font("Arial Black", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SurrenderBtn.Location = new System.Drawing.Point(580, 202);
-            this.SurrenderBtn.Name = "SurrenderBtn";
-            this.SurrenderBtn.Size = new System.Drawing.Size(148, 26);
-            this.SurrenderBtn.TabIndex = 31;
-            this.SurrenderBtn.Text = "Сдаться";
-            this.SurrenderBtn.UseVisualStyleBackColor = false;
-            // 
-            // StepPos
-            // 
-            this.StepPos.AutoSize = true;
-            this.StepPos.Font = new System.Drawing.Font("Arial Black", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.StepPos.Location = new System.Drawing.Point(575, 481);
-            this.StepPos.Name = "StepPos";
-            this.StepPos.Size = new System.Drawing.Size(18, 27);
-            this.StepPos.TabIndex = 32;
-            this.StepPos.Text = " ";
-            // 
-            // StepRes
-            // 
-            this.StepRes.AutoSize = true;
-            this.StepRes.Font = new System.Drawing.Font("Arial Black", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.StepRes.Location = new System.Drawing.Point(674, 481);
-            this.StepRes.Name = "StepRes";
-            this.StepRes.Size = new System.Drawing.Size(18, 27);
-            this.StepRes.TabIndex = 33;
-            this.StepRes.Text = " ";
-            // 
             // FieldForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1309, 562);
-            this.Controls.Add(this.StepRes);
-            this.Controls.Add(this.StepPos);
-            this.Controls.Add(this.SurrenderBtn);
             this.Controls.Add(this.E1Left);
             this.Controls.Add(this.E2Left);
             this.Controls.Add(this.E3Left);
@@ -398,35 +263,26 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.FireBtn);
             this.Controls.Add(this.ResetChoiceBtn);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.WhoIsMoveLabel);
             this.Controls.Add(this.ThreeLabel);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.dataGridView1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "FieldForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FieldForm";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FieldForm_FormClosing);
+            this.Load += new System.EventHandler(this.FieldForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn1;
-        private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn2;
-        private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn3;
-        private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn4;
-        private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn5;
-        private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn6;
-        private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn7;
-        private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn8;
-        private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn9;
-        private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn10;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label ThreeLabel;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label WhoIsMoveLabel;
         private System.Windows.Forms.Button ResetChoiceBtn;
         private System.Windows.Forms.Button FireBtn;
         private System.Windows.Forms.Label label4;
@@ -442,8 +298,5 @@
         private System.Windows.Forms.Label E3Left;
         private System.Windows.Forms.Label E2Left;
         private System.Windows.Forms.Label E1Left;
-        private System.Windows.Forms.Button SurrenderBtn;
-        private System.Windows.Forms.Label StepPos;
-        private System.Windows.Forms.Label StepRes;
     }
 }
